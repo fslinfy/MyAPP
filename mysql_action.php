@@ -11,10 +11,13 @@ $retval = '';
 switch($act) {
 
 
-	case 'systemsetting' :
-		$retval = systemsetting();
+	case 'pagetest' :
+		$retval = pagetest();
 		break;
 
+		case 'systemsetting' :
+		$retval = systemsetting();
+		break;
 
 	case 'cpjkdselectdata' :
 		$retval = cpjkdselectdata();
@@ -129,6 +132,9 @@ case 'cpckdcwshsave' :
 
 	case 'systemmenutreelist' :
 		$retval = systemmenutreelist();
+		break;
+		case 'wxsystemmenutreelist' :
+		$retval = wxsystemmenutreelist();
 		break;
 
 
@@ -886,6 +892,26 @@ function commoditytypetree() {
     
     ]';
 
+}
+
+
+
+function pagetest() {
+
+	$sqlstr = " SELECT SQL_CALC_FOUND_ROWS  * FROM customer where c_id<680  limit 5,10 ";
+	$query = mysql_query($sqlstr);
+	$query =mysql_fetch_array(mysql_query("select found_rows()"))[0];
+	return $query ;
+	//$total_rows=mysql_num_rows($query);
+
+	//return getjsonstoredata($query, 0);
+	
+	//list($row_num) = $query->fetch_row(); 
+	return $total_rows;
+
+	//$sqlstr = " SELECT * FROM cuestomer limit 10,20 ";
+	//$query = mysql_query($sqlstr);
+	//return getjsonstoredata($query, 0);
 }
 
 function enterpriselist() {
@@ -1840,6 +1866,65 @@ function systemmenutreelist() {
 	return @'[]';
 
 }
+function wxsystemmenutreelist() {
+
+	$system  =(int)$_GET["system"];
+	$sqlstr = "SELECT distinct Type as text,TypeOrder as code  FROM wx_menu where system=".$system;
+	
+	$sqlstr = $sqlstr . " order by TypeOrder";
+	//return $sqlstr;
+	$type = mysql_query($sqlstr);
+	
+	$sqlstr = "SELECT id,Name as text,TypeOrder as code from wx_menu where system=".$system;
+	$sqlstr = $sqlstr . " order by PageOrder ";
+	
+	$workerquery = mysql_query($sqlstr);
+	if ($workerquery) {
+		$menutype = "";
+		$tree = array();
+		while ($menurow = mysql_fetch_array($type)) {
+			$menutype = $menurow['code'];
+			$my0_array = array();
+			$my0_array["text"] = urlencode($menurow['text']);
+			$my0_array["id"] = $menurow['code'] + '1000';
+			$my0_array["pname"] =urlencode($menurow['text']);
+			$my0_array["code"] = $menurow['code'];
+			$my0_array["checked"] = false;
+			$my0_array["pid"] = 0;
+			$s = 0;
+			$menu_array1 = array();
+			mysql_data_seek($workerquery, 0);
+			while ($row = mysql_fetch_array($workerquery)) {
+				if ($row["code"] == $menutype) {
+					$s = $S + 1;
+					$my_array = array();
+					$my_array["text"] = urlencode($row['text']);
+					$my_array["id"] = $row['id'];
+					$my_array["code"] = $row['code'];
+					$my_array["leaf"] = 1;
+					$my_array["checked"] = false;
+					$my_array["pname"] =urlencode($menurow['text']);
+					$my_array["expanded"] = 0;
+					array_push($menu_array1, $my_array);
+				}
+			}
+
+			if ($s > 0) {
+				$my0_array["leaf"] = 0;
+				$my0_array["expanded"] = 0;
+				$my0_array["children"] = $menu_array1;
+
+			} else {
+				$my0_array["leaf"] = 1;
+			}
+			array_push($tree, $my0_array);
+		}
+		return urldecode(json_encode($tree));
+
+	}
+	return @'[]';
+
+}
 
 
 function packingselecttreelist() {
@@ -1949,7 +2034,7 @@ function typetreelist() {
 function usertypetreelist() {
 
 	$p_e_code =$_GET["p_e_code"];
-	$sqlstr = "SELECT typeid as id ,typename as text,code,new,del,edit,cwsh ,sh,system,menustring FROM usertype where E_code='" . $p_e_code . "'  order by code";
+	$sqlstr = "SELECT typeid as id ,typename as text,code,new,del,edit,cwsh ,sh,system,menustring,wxmenustring FROM usertype where E_code='" . $p_e_code . "'  order by code";
 	//return $sqlstr;
 	$typequery = mysql_query($sqlstr);
 
@@ -1966,6 +2051,7 @@ function usertypetreelist() {
 			$my0_array["sh"] = $menurow['sh'];
 			$my0_array["cwsh"] = $menurow['cwsh'];
 			$my0_array["menustring"] = $menurow['menustring'];
+			$my0_array["wxmenustring"] = $menurow['wxmenustring'];
 			$my0_array["system"] = $menurow['system'];
 			
 			$my0_array["leaf"] = 1;
@@ -9159,6 +9245,7 @@ function userssave($optype) {
 					$sql .= ",0";
 		 		}
 			}
+
 			//	$sql .= "," . $arr['edit'];
 			//	$sql .= "," . $arr['sh'];
 		} 
@@ -9253,6 +9340,14 @@ default:
 				$sql .= ",lastdel=1";
 			} else {
 				$sql .= ",lastdel=0";
+			}
+		}
+		$str = $arr['smsactive'];
+		if (isset($str)) {
+			if ($str) {
+				$sql .= ",smsactive=1";
+			} else {
+				$sql .= ",smsactive=0";
 			}
 		}
 			
@@ -9853,12 +9948,12 @@ $update = $_POST['update'];
 		$del = $_POST['del'];
 		$sh = $_POST['sh'];
 		$cwsh = $_POST['cwsh'];
-		$menustring = $_GET['menustr'];
-
+		$menustring = $_GET['menustring'];
+		$wxmenustring = $_GET['wxmenustring'];
 	
 		if ($id < 1) 
 		{
-			$sql = "insert into usertype (E_code,code,menustring,typename,new,del,edit,sh,cwsh) values ('" . $E_code . "','" . $code . "','". $menustring . "','" . $name . "'";
+			$sql = "insert into usertype (E_code,code,menustring,wxmenustring,typename,new,del,edit,sh,cwsh) values ('" . $E_code . "','" . $code . "','". $menustring . "','" .$wxmenustring . "','" . $name . "'";
 			if ($new == "on") {
 				$sql = $sql . ",1";
 			} else {
@@ -9894,7 +9989,7 @@ $update = $_POST['update'];
 		{
 			$sql = "update usertype  set code='" . $code . "',typename='" . $name . "'";
 			$sql = $sql . ",menustring='".$menustring."'";
-			
+			$sql = $sql . ",wxmenustring='".$wxmenustring."'";
 			if ($new == "on") {
 				$sql = $sql . ",new=1";
 			} else {

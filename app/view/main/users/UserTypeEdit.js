@@ -8,7 +8,7 @@ Ext.define('MyApp.view.main.users.UserTypeEdit', {
         title: '{title}'
     },
     title: '编辑资料',
-    width: 600,
+    width: 900,
     height: 500,
     minWidth: 200,
     minHeight: 120,
@@ -71,6 +71,16 @@ Ext.define('MyApp.view.main.users.UserTypeEdit', {
                         bind: '{menustring}'
                     }
                     ,
+                    {
+                        xtype: 'textarea',
+                        width: '90%', height: 'auto',
+                        fieldLabel: 'wxmenustring',
+
+                        name: 'wxmenustring',
+                        hidden: true,
+                        bind: '{wxmenustring}'
+                    }
+,
 
 
                     {
@@ -130,12 +140,13 @@ Ext.define('MyApp.view.main.users.UserTypeEdit', {
             },
             {
                 xtype: "treepanel",
-                title: '系统权限设置',
+                title: '仓库系统功能权限设置',
                 reference: "selectWorkerTreePanel",
                 itemId: "selectWorkerTreePanel",
                 singleExpand: false,
                 rootVisible: false,
                 draggable: false,
+                
                 useArrows: true,
                 border: 1,
                 lines: true,
@@ -186,6 +197,92 @@ Ext.define('MyApp.view.main.users.UserTypeEdit', {
                                     for (var i = 0; i < node.childNodes.length; i++) {
                                           var node1=node.childNodes[i];             
                                         if (str.indexOf(";"+node1.data.id+";")>-1)
+                                            {
+                                                node1.data.checked=true;
+                                            }
+                                    }
+                                        node.expand(true,true);
+
+                                }
+                            }
+                        }
+                    }
+
+                },
+                listeners: {
+                    checkchange: function (node, checked) {
+                        
+                        node.expand();
+                        node.checked = checked;
+                        node.eachChild(function (child) {
+                            child.set('checked', checked);
+                            this.fireEvent('checkchange', child, checked);
+                        });
+                        
+
+                    }
+                }
+            },
+            {
+                xtype: "treepanel",
+                title: '小程序功能权限设置',
+                reference: "selectWorkerTreePanel1",
+                itemId: "selectWorkerTreePanel1",
+                singleExpand: false,
+                rootVisible: false,
+                draggable: false,
+                
+                useArrows: true,
+                border: 1,
+                lines: true,
+                flex: 1,
+                expanded: true,
+                store: {
+                    itemId: "selectWorkerTreeStore",
+                    type: 'tree',
+
+                    proxy: {
+                        type: 'ajax',
+                        api: {
+                            read: sys_ActionPHP + '?act=wxsystemmenutreelist'
+                        },
+                        actionMethods: {
+                            read: 'GET'
+                        },
+                        extraParams: {
+                            userInfo: base64encode(Ext.encode(obj2str(sys_userInfo))),
+                            p_e_code: sys_enterprise_code,
+                            p_l_id: sys_location_id,
+                            displayall: sys_DisplayAll
+                        }
+                    },
+                    root: {
+                        text: '全部',
+                        id: 'ALL',
+                        code: "",
+                        checked: false,
+                        expanded: true,
+                        draggable: false
+                    },
+                    autoLoad: true,
+                    listeners: {
+                        load: function (store) {
+                            var p = that.lookupReference('popupWindow').getViewModel();
+                            var str = p.get('wxmenustring');
+                            console.log(str);
+                            if (str==undefined) str='';
+                            var tree = that.getView().down("#selectWorkerTreePanel1") ;
+                            var nodes = tree.getRootNode().childNodes;
+                            for (var j = 0; j < nodes.length; j++) {
+                                var node = tree.getRootNode().childNodes[j];
+                                    if (str.indexOf("|"+node.data.id+"|")>-1)
+                                            {
+                                                node.data.checked=true;
+                                            }
+                                if (node.hasChildNodes()) {
+                                    for (var i = 0; i < node.childNodes.length; i++) {
+                                          var node1=node.childNodes[i];             
+                                        if (str.indexOf("|"+node1.data.id+"|")>-1)
                                             {
                                                 node1.data.checked=true;
                                             }

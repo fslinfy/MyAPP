@@ -154,7 +154,7 @@ Ext.define('MyApp.view.main.customer.CustomerView', {
 
     {
         xtype: 'widgetcolumn',
-        width: 70, sortable: false,
+        width: 90, sortable: false,
         widget: {
             xtype: 'button',
             text: '单价定义',
