@@ -517,9 +517,6 @@ Ext.define('MyApp.view.main.cpkc.CpjxclocCtrl', {
         that.onBtnQueryClick();
         return false;
     },
-
-
-
     SelectCpbmView: function (record) {
         treeSelect('cpmc', that, '', that.viewname, true);
         return false;

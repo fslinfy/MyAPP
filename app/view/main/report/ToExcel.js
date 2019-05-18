@@ -103,7 +103,6 @@ var Jhxlsx = {
                 cellText = cellObj.text;
             }
             var cell = {v: cellText};
-
             var calColWidth = true;
             if (cellObj.hasOwnProperty('merge')) {
                 var mergeObj = cellObj.merge;

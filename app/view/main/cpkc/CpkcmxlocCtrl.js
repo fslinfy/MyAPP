@@ -310,8 +310,6 @@ Ext.define('MyApp.view.main.cpkc.CpkcmxlocCtrl', {
         Jhxlsx.export(prtData.tableData, prtData.options);
         return;
     },
-
-
     SelectCkbmView: function (record) {
         treeSelect('ckmc', that, 'cpkc', that.viewname, true);
         return false;
@@ -330,8 +328,6 @@ Ext.define('MyApp.view.main.cpkc.CpkcmxlocCtrl', {
         that.onBtnQueryClick();
         return false;
     },
-
-
     SelectCpbmView: function (record) {
         treeSelect('cpmc', that, 'cpkc', that.viewname, true);
         return false;

@@ -124,11 +124,7 @@ Ext.define('MyApp.view.main.cpkc.CpkclocCtrl', {
             Ext.MessageBox.alert('注意！', '请选择客户名称！');
             return;
         }
-
         var store = this.getView().getStore();
-
-
-
         var jsonData = [];
         var kcarray = store.data.items;
         var arr = [];
