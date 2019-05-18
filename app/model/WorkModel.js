@@ -14,6 +14,10 @@ Ext.define('MyApp.model.WorkModel', {
 
     },
     {
+        name: 'lidstring'
+
+    },
+    {
         name: 'Unit_price', type: 'int'
     },
     {

@@ -2,9 +2,11 @@
 	extend: 'Ext.grid.Panel',
 	xtype: 'WorkView',
 	title: 'Work',
-	requires: ['MyApp.store.WorkStore', 'MyApp.view.main.QueryToolbarView'],
+	requires: ['MyApp.store.WorkStore',
+	 'MyApp.view.main.QueryToolbarView'],
 	id: 'WorkGrid',
 	plugins: ['cellediting', 'gridfilters'],
+
 	controller: 'WorkCtrl',
 
 	store: {
@@ -61,7 +63,20 @@
 			type: 'string'
 		}
 
-	}, {
+	}, 
+	{
+		xtype: "numbercolumn", align: 'right', format: '00000.00',
+		text: '项目缺省单价', dataIndex: 'Unit_price', flex: 1, align: 'left', sortable: false,
+		editor: {
+			type: 'numberfield',
+			decimalPrecision: 2,
+			align: 'right',
+			allowBlank: true,
+			minValue: 0,
+			maxValue: 9999.99
+		}
+	},
+    {
 		xtype: 'checkcolumn',
 		width: 90,
 		text: '按重量核算',
@@ -83,18 +98,24 @@
 		width: 90,
 		text: '活跃',
 		dataIndex: 'Active'
-	}],/*
-	dockedItems : [{
-		xtype : 'pagingtoolbar',
-		store : {
-			type : 'WorkStore'
-		},
-		dock : 'bottom',
-		displayInfo : true,
-		pageSize : 3,
-		displayMsg : '总记录数 {0} - {1} of {2}',
-		emptyMsg : "没有记录"
-	}],*/
+	},
+	{
+
+		text: '适用仓库',
+		dataIndex: 'lidstring',
+		align: 'left'
+	},
+	{
+		xtype: 'widgetcolumn',
+		width: 40,
+		sortable: false,
+		widget: {
+			xtype: 'button',
+			handler:'onSelectckmcView'
+		}
+	}
+
+],
 	listeners: {
 		select: 'onItemSelected'
 	}

@@ -2773,7 +2773,7 @@ function cpjxcloc() {
 
 
 
-	$sqlstr="SELECT cpjxc.l_id,khid,cdid,cpid,bzid,kh.c_name as khmc,cd.P_name as cdmc,
+	$sqlstr="SELECT cpjxc.l_id,khid,cdid,cpid,bzid,kh.c_name as khmc,kh.c_shortname as khjc,cd.P_name as cdmc,
 	cp.s_name as cpmc,bz.ps_name as bzmc, cpph,
 	cpgg,
 	jldw,
@@ -10344,9 +10344,10 @@ foreach ($params as $arr) {
 switch ($optype) {
 case 1 :
 //insert
-$sql = "insert into work(E_code,Jobs,Jobsname,Unit_price,Weight_status,Quantity_in,Price_in) values('" . $arr['E_code'] . "'";
+$sql = "insert into work(E_code,Jobs,Jobsname,lidstring,Unit_price,Weight_status,Quantity_in,Price_in) values('" . $arr['E_code'] . "'";
 $sql .= ",'" . $arr['Jobs'] . "'";
 $sql .= ",'" . $arr['Jobsname'] . "'";
+$sql .= ",'" . $arr['lidstring'] . "'";
 $sql .= "," . $arr['Unit_price'];
 $sql .= "," . $arr['Weight_status'];
 $sql .= "," . $arr['Quantity_in'];
@@ -10367,7 +10368,10 @@ $str = $arr['Jobsname'];
 if (isset($str)) {
 $sql .= ",Jobsname='" . $str . "'";
 }
-
+$str = $arr['lidstring'];
+if (isset($str)) {
+$sql .= ",lidstring='" . $str . "'";
+}
 $str = $arr['Unit_price'];
 if (isset($str)) {
 $sql .= ",Unit_price=" . $str;

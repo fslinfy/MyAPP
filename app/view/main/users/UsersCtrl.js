@@ -104,7 +104,7 @@ Ext.define('MyApp.view.main.users.UsersCtrl', {
             },
             "#btnCkmcTreeAdd": {
                 click: this.onCkmcSelectOkClick
-            },
+            }
 
 
 
@@ -112,9 +112,6 @@ Ext.define('MyApp.view.main.users.UsersCtrl', {
         var store = this.getView().down("#UsersGridView").getStore();
         store.on('beforeload', this.onBeforeReload, this);
     },
-    // onSelectckmcView: function () {
-    //      console.log("select ckmc")
-    //  },
     onFilterChange: function (v) {
         // return storeFilter(this.getView().down("#UsersGridView").getStore(),'CT_name',v.rawValue);
         var store = this.getView().down("#UsersGridView").getStore()

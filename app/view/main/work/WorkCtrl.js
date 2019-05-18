@@ -1,13 +1,20 @@
-﻿
+﻿var that;
+var typeid = 0;
+
 Ext.define('MyApp.view.main.work.WorkCtrl', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.WorkCtrl',
     requires: [
         'MyApp.view.main.work.WorkView'
+        , 'MyApp.view.main.tree.CkmcSelectTree'
     ],
     onBtnQueryClick: function (button, e, options) {
         this.getView().getStore().load();
         return false;
+    },
+    onSelectckmcView:function(button, e, options)
+    {
+        console.log("help");
     },
     onItemSelected: function (sender, record) {
         var tool = this.getView().down("#QueryToolbarView");
@@ -81,11 +88,56 @@ Ext.define('MyApp.view.main.work.WorkCtrl', {
             },
             "#FilterField": {
                 change: this.onFilterChange
+            },
+            "#btnCkmcTreeAdd": {
+                click: this.onCkmcSelectOkClick
             }
         });
         var store = this.getView().getStore();
         store.on('beforeload', this.onBeforeReload, this);
     },
+    onCkmcSelectOkClick: function (b) {
+
+        var records = that.getView().down("#selectCkmcTreePanel").getChecked();
+        var names = [];
+
+        var ckstr = [];
+
+        Ext.Array.each(records, function (rec) {
+            names.push(rec.get('text'));
+            ckstr.push(rec.get('id'));
+
+        });
+        // console.log(ckstr, names)
+        var selection = that.recordID;
+        if (selection != undefined) {
+            var str = "," + ckstr.join(',') + ","
+            if (str == ",,") str = "";
+            selection.set('lidstring', str);
+            that.getView().down("#selectCkmcWindow").close();
+        }
+    },
+
+/*    onSelectckmcView: function (button) {
+        console.log("rec.data.lidstring");
+        var rec = button.getWidgetRecord();
+        console.log(rec.data.lidstring);
+        var record = [];
+        record['lidstring'] = rec.data.lidstring;
+        that.recordID = rec;
+        that.checkedidstring = rec.data.lidstring;
+        var view = that.getView();
+        that.dialog = view.add({
+            xtype: 'selectCkmcWindow',
+            viewModel: {
+                data: record
+            },
+            session: true
+        });
+        that.dialog.show();
+    },
+*/
+
     onFilterChange: function (v) {
         return storeFilter(this.getView().getStore(), 'Jobsname', v.rawValue);
     }
